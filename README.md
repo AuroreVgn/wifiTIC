@@ -365,6 +365,13 @@ Après l'installation de WiFiTIC et la réception des premières trames MQTT, ou
 
 #### A. Consommation du réseau
 
+Voici un exemple de configuration du réseau électrique avec les quatre index Zen Flex, l'index d'injection et la puissance soutirée estimée :
+
+![Configuration du tableau de bord Énergie Home Assistant avec les capteurs WiFiTIC](assets/wifitic-dashboard-energie.webp)
+
+> [!NOTE]
+> La capture montre également la puissance soutirée estimée (W). Ce capteur de puissance instantanée ne remplace pas les index d'énergie cumulée (Wh) pour le calcul de la consommation.
+
 1. Dans **Réseau électrique**, choisir **Ajouter une consommation du réseau**.
 2. Sélectionner le capteur WiFiTIC **Index énergie soutirée – nom de période** correspondant à la première période tarifaire.
 3. Ajouter une nouvelle consommation pour **chaque autre index tarifaire** à suivre (heures pleines, heures creuses, périodes spécifiques Zen Flex, Tempo, etc.).
