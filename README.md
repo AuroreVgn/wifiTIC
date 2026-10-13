@@ -1,14 +1,14 @@
 # 📊 WiFiTIC
 
-[![Release](https://img.shields.io/github/v/release/AuroreVgn/edf-zen-flex?label=release&style=flat-square)](https://github.com/AuroreVgn/wifiTIC/releases)
+[![Release](https://img.shields.io/github/v/release/AuroreVgn/wifiTIC?label=release&style=flat-square)](https://github.com/AuroreVgn/wifiTIC/releases)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5?style=flat-square)](https://www.hacs.xyz/)
 [![Maintainer](https://img.shields.io/badge/maintainer-%40AuroreVgn-0078D7?style=flat-square)](https://github.com/AuroreVgn)
 [![Ko--fi](https://img.shields.io/badge/Ko--fi-Soutenir-FF5E5B?logo=kofi&logoColor=white&style=flat-square)](https://ko-fi.com/aurorevgn)
 
-Intégration personnalisée **Home Assistant** pour les compteurs **Linky** équipés du module **WiFiTIC CARTELECTRONIC** : suivi de la consommation, de l'injection réseau, des index tarifaires et de l'historique REST.
+Intégration personnalisée **Home Assistant** pour les compteurs **Linky** équipés du module **[WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)** : suivi de la consommation, de l'injection réseau, des index tarifaires et de l'historique REST.
 
 > [!IMPORTANT]
-> Projet communautaire non officiel, indépendant de CARTELECTRONIC et d'Enedis. Les index d'injection correspondent à l'export réseau et non à la production solaire totale.
+> Projet communautaire non officiel, indépendant de [Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html) et d'Enedis. Les index d'injection correspondent à l'export réseau et non à la production solaire totale.
 
 ## 🏠 Mes projets Home Assistant
 
@@ -20,14 +20,19 @@ Si cette intégration vous est utile, vous pouvez [soutenir son développement s
 
 ## ✨ Fonctionnalités
 
-- Réception des données de téléinformation **MQTT** du compteur Linky.
-- Suivi de la consommation et de l'injection réseau.
-- Index cumulés par période tarifaire, notamment pour **EDF Zen Flex**.
-- Consultation des historiques disponibles via l'API REST du module.
-- Prévisualisation des historiques sans écriture.
-- Raccordement de l'historique REST aux statistiques énergétiques natives MQTT.
-- Compatibilité avec le tableau de bord **Énergie**.
-- Carte Lovelace dédiée dans un [dépôt séparé](https://github.com/AuroreVgn/wifiTIC_card).
+- Configuration depuis l'interface Home Assistant, sans capteurs YAML à créer manuellement.
+- **MQTT en temps réel** : puissance apparente soutirée, puissance soutirée estimée, intensité, tension, puissance injectée, index de consommation et d'injection, période tarifaire et informations fournisseur.
+- **REST local** : nom du contrat, libellés des périodes tarifaires, informations du compteur et diagnostics de transmission TIC.
+- **Index dynamiques** : récupération des libellés de périodes depuis le module ; prise en charge des contrats à plusieurs périodes, notamment **EDF Zen Flex** (code contrat `11`), **Tempo** et des contrats personnalisés.
+- Pour **Zen Flex**, adaptation des libellés « pointe » en « sobriété » dans les index.
+- **Huit relais Linky R1 à R8**, exposés comme capteurs binaires de diagnostic, désactivés par défaut.
+- **Énergie soutirée et injectée aujourd'hui**, calculée à partir des variations d'index MQTT, avec restauration d'état après redémarrage.
+- **Historique REST** : prévisualisation, puis fusion contrôlée des historiques de soutirage et d'injection avec les statistiques natives du tableau de bord Énergie.
+- **Bouton d'actualisation REST**, diagnostics des trames valides et des erreurs CRC.
+- Interface traduite en **français et anglais**.
+- Carte Lovelace complémentaire dans le [dépôt WiFiTIC Card](https://github.com/AuroreVgn/wifiTIC_card).
+
+Les données du compteur sont lues à travers le module **[WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)** ; l'intégration ne nécessite pas de connexion à un compte Enedis ou EDF.
 
 ## 📦 Installation
 
@@ -74,52 +79,201 @@ Après l'installation, aller dans **Paramètres → Appareils et services → Aj
 
 ## ⚙️ Configuration
 
-L'intégration nécessite un module WiFiTIC accessible sur le réseau local et un broker MQTT opérationnel.
+L'intégration associe **MQTT** (mesures en temps réel) et **REST** (informations du module, contrat, diagnostics et historiques).
 
-### 1. Connexion au module
+```text
+Compteur Linky ── téléinformation TIC ──► WiFiTIC
+                                          │
+                           ┌──────────────┴──────────────┐
+                           │                             │
+                          MQTT                          REST
+                           │                             │
+                   Broker MQTT                    API HTTP locale
+                           │                             │
+                           └───────────┬─────────────────┘
+                                       ▼
+                              Home Assistant
+```
 
-Renseigner l'adresse du module WiFiTIC et les informations de connexion REST éventuellement nécessaires.
+### 1. Configurer MQTT dans Home Assistant
 
-### 2. Téléinformation MQTT
+1. Disposer d'un **broker MQTT** joignable par Home Assistant et par le module **[WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)**. Sur Home Assistant OS, le module complémentaire **Mosquitto broker** convient.
+2. Installer et démarrer le broker ; créer un utilisateur autorisé à s'y connecter si nécessaire. Ne pas utiliser un compte sans mot de passe exposé sur Internet.
+3. Dans **Paramètres → Appareils et services**, ajouter l'intégration officielle **MQTT** (ou vérifier qu'elle est déjà configurée).
+4. Indiquer l'adresse du broker, son port (généralement **1883** pour MQTT sans TLS) et les identifiants du compte MQTT, si l'assistant les demande.
+5. Vérifier que MQTT est connecté. **Aucun capteur MQTT manuel ni MQTT Discovery n'est nécessaire pour cette intégration** : WiFiTIC s'abonne directement aux sujets.
 
-Configurer le module pour publier ses trames sur le broker MQTT. Les sujets de référence sont `/wifitic/teleinfo` et `/wifitic/online` ; ils dépendent du sujet racine configuré.
+> [!NOTE]
+> Le broker est un service distinct de l'intégration MQTT de Home Assistant. Le module et Home Assistant doivent se connecter **au même broker**.
 
-### 3. Historique énergétique
+### 2. Configurer MQTT sur le module WiFiTIC
 
-L'importation de l'historique REST est facultative et distincte de la collecte MQTT en temps réel. Une sauvegarde de Recorder est recommandée avant toute fusion.
+Ouvrir l'interface Web locale du **[module WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)** et accéder à ses paramètres **MQTT**. Les libellés exacts peuvent varier selon le micrologiciel.
+
+| Paramètre du module | Valeur / indication |
+| --- | --- |
+| MQTT activé | **Oui** |
+| Serveur / Broker | Adresse IP ou nom DNS du **broker MQTT**, pas nécessairement celle du compteur |
+| Port | `1883` par défaut sans TLS, ou le port réellement configuré |
+| Utilisateur | Compte MQTT autorisé sur le broker |
+| Mot de passe | Mot de passe correspondant |
+| Sujet / Topic racine | `/wifitic` dans les exemples ci-dessous |
+| Publication des données TIC | Activée |
+
+Exemple de paramètres, **à adapter à votre réseau** :
+
+```text
+Serveur MQTT : 192.168.1.10
+Port         : 1883
+Utilisateur  : mqtt_wifitic
+Mot de passe : ********
+Topic racine : /wifitic
+```
+
+**Attention au slash initial :** `wifitic` et `/wifitic` sont deux sujets MQTT différents. Le sujet choisi sur le module doit être **identique** au sujet racine configuré dans l'intégration Home Assistant.
+
+Si le module propose son propre **MQTT Discovery Home Assistant**, il est préférable de le désactiver pour éviter les entités en double : l'intégration WiFiTIC crée elle-même ses entités. Elle ne supprime pas les entités Discovery déjà existantes.
+
+### 3. Vérifier les publications MQTT
+
+Dans **Paramètres → Appareils et services → MQTT → Configurer → Écouter un sujet**, écouter :
+
+```text
+/wifitic/#
+```
+
+Les deux sujets attendus par le code, pour un sujet racine `/wifitic`, sont :
+
+| Sujet | Contenu |
+| --- | --- |
+| `/wifitic/teleinfo` | Message JSON contenant les mesures, index, tarifs et relais |
+| `/wifitic/online` | Disponibilité du module (`true`, `1`, `online`, `on` pour l'état en ligne) |
+
+Exemple **simplifié** de message sur `/wifitic/teleinfo` :
+
+```json
+{
+  "consumption": {
+    "phases": [{"app": 1189, "iinst": 5}],
+    "runningPeriod": "Heures pleines jour normal",
+    "counters": [{"value": 37327777}, {"value": 23593133}],
+    "relay": {"r1": false, "r2": false}
+  },
+  "production": {"counter": 8979143, "pprod": 0},
+  "counter": {"state": "ok", "contract": 11, "psous": 9, "pcoup": 9,
+              "phases": [{"voltage": 230}]}
+}
+```
+
+La structure exacte et le nombre d'index dépendent des informations envoyées par le compteur.
+
+Si aucun message n'arrive, vérifier **l'adresse du broker**, les identifiants, la connexion réseau, la publication MQTT du module et surtout le **slash initial** du sujet.
+
+### 4. Ajouter l'intégration WiFiTIC
+
+Dans **Paramètres → Appareils et services → Ajouter une intégration → WiFiTIC**, renseigner :
+
+| Champ | Description |
+| --- | --- |
+| Hôte | IP ou nom d'hôte du module WiFiTIC (API REST locale en HTTP) |
+| Utilisateur | Identifiant REST si une authentification est configurée |
+| Mot de passe | Mot de passe REST correspondant |
+| Sujet MQTT racine | `/wifitic` par défaut ; doit correspondre exactement au topic configuré sur le module |
+
+L'assistant teste l'API `/rest/teleinfo` et identifie le compteur pour éviter les doublons. Les identifiants REST ne sont **pas nécessairement** ceux du broker MQTT.
+
+L'intégration attend l'arrivée des données MQTT et retente son abonnement si MQTT n'est pas encore disponible. Les données REST restent accessibles indépendamment.
+
+### 5. Actualisation et historique
+
+Les informations REST sont actualisées automatiquement **toutes les 5 minutes** ; les données MQTT sont reçues dès leur publication. Les compteurs de diagnostic CRC sont désactivés par défaut.
+
+Pour l'importation des données historiques, consulter la rubrique **🕰️ Importation de l'historique énergétique** plus bas.
 
 ## 📊 Entités créées
 
 ### Consommation et injection
 
-| Capteur | Rôle |
-| --- | --- |
-| Index de consommation par période tarifaire | Énergie cumulée soutirée |
-| Index d'injection | Énergie cumulée exportée vers le réseau |
-| Puissance soutirée | Suivi instantané du soutirage |
-| Puissance injectée | Suivi instantané de l'injection |
+| Capteur | Source | Unité / particularité |
+| --- | --- | --- |
+| Puissance apparente soutirée | MQTT `consumption.phases[0].app` | VA |
+| Puissance soutirée du réseau (estimée) | MQTT, calcul à partir de la puissance apparente | W ; facteur estimé **0,95** |
+| Intensité instantanée | MQTT `consumption.phases[0].iinst` | A |
+| Tension réseau | MQTT `counter.phases[0].voltage` | V |
+| Puissance injectée sur le réseau | MQTT `production.pprod` | W |
+| Index énergie injectée au réseau | MQTT `production.counter` | Wh, cumul croissant |
+| Index énergie soutirée – *nom de période* | MQTT `consumption.counters[n].value` | Wh, un capteur par index |
+| Énergie soutirée aujourd'hui | Variations des index MQTT | Wh, remise à zéro quotidienne |
+| Énergie injectée aujourd'hui | Variations de l'index d'injection MQTT | Wh, remise à zéro quotidienne |
 
-Les index cumulés peuvent être utilisés dans le tableau de bord **Énergie** de Home Assistant.
+La puissance soutirée en watts est **une estimation** (`VA × 0,95`) et non une mesure directe de puissance active. Les deux capteurs d'énergie quotidienne restaurent leur état après redémarrage et gèrent le changement de jour.
+
+Les index cumulés sont compatibles avec les statistiques longue durée de Home Assistant (`device_class: energy`, `state_class: total_increasing`). Ils sont utilisables dans le tableau de bord **Énergie**.
 
 ### Contrat et période courante
 
-| Donnée | Rôle |
+| Capteur | Rôle |
 | --- | --- |
-| Période tarifaire | Période active remontée par le compteur |
-| Contrat | Informations tarifaires disponibles |
-| Mesures électriques | Données instantanées issues de la téléinformation |
+| Période tarifaire | Période active (`consumption.runningPeriod`) |
+| Contrat électrique | Nom déterminé à partir des informations REST |
+| État de la téléinformation | État du compteur |
+| Puissance souscrite au contrat | Valeur `psous` en kVA |
+| Seuil de coupure Linky | Valeur `pcoup` en kVA |
+| Profil tarifaire fournisseur aujourd'hui | Code `currentDaySupplier` (champ TIC `NJOURF`) |
+| Profil tarifaire fournisseur demain | Code `nextDaySupplier` (champ TIC `NJOURF+1`) |
 
-Le nombre d'index dépend du contrat électrique et des informations publiées par le module.
+Les noms des index proviennent de `/rest/teleinfo/periods`. Pour **EDF Zen Flex** (code contrat `11`), les libellés « pointe » sont présentés comme « sobriété ». Les périodes HC/HP disposent d'icônes adaptées.
+
+Les profils fournisseur sont exposés sous leur **code brut** : ils ne constituent pas une prévision de prix du kWh.
 
 ### Diagnostics
 
-Les données de diagnostic disponibles dépendent de l'état du module WiFiTIC et des informations transmises via MQTT ou REST.
+| Entité | Type | Particularité |
+| --- | --- | --- |
+| Trames TIC valides | Capteur REST | Diagnostic, désactivé par défaut |
+| Erreurs de transmission TIC (CRC) | Capteur REST | Diagnostic, désactivé par défaut |
+| Relais 1 à 8 | Huit capteurs binaires MQTT | Diagnostic, désactivés par défaut |
+| Actualiser les données REST | Bouton | Actualisation manuelle du coordinateur REST |
+
+Les relais lisent `consumption.relay.r1` à `r8`. Leur état est informatif : le bouton d'actualisation ne commande pas les relais.
+
+### Provenance des données
+
+| API / sujet | Utilisation |
+| --- | --- |
+| `/wifitic/teleinfo` | Puissances, mesures, index, tarifs, relais |
+| `/wifitic/online` | Disponibilité du module |
+| `/rest/teleinfo` | Informations générales du compteur et contrat |
+| `/rest/teleinfo/periods` | Libellés des périodes tarifaires |
+| `/rest/teleinfo/jour` | Données journalières REST consultées par l'intégration |
+| `/rest/debug/teleinfo` | Trames TIC valides et erreurs CRC |
+| `/rest/configuration` et `/rest/configuration/MQTT` | Informations de configuration |
+| `/rest/data/{year}/{day}` | Historique énergétique |
+
+Les API REST sont locales au module **[WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)**.
 
 ## 🕰️ Importation de l'historique énergétique
 
-Le service `wifitic.preview_history` permet de consulter les séries historiques sans écriture.
+L'intégration peut compléter les **statistiques natives MQTT** de Home Assistant avec les données historiques REST antérieures à la mise en service de l'intégration. Elle traite l'**injection** et le **soutirage**, y compris les index de consommation par période.
 
-Pour prévisualiser la fusion de l'historique d'injection et de soutirage :
+### 1. Sauvegarder Home Assistant
+
+Avant toute modification, réaliser une **sauvegarde incluant Recorder**. La fusion modifie les statistiques longue durée et ne constitue pas une simple mise à jour d'entité.
+
+### 2. Prévisualiser l'historique REST
+
+Dans **Outils de développement → Actions**, sélectionner `wifitic.preview_history` et fournir une plage de dates :
+
+```yaml
+action: wifitic.preview_history
+data:
+  start_date: "2026-10-05"
+  end_date: "2026-10-08"
+```
+
+Cette action n'écrit pas dans Recorder.
+
+### 3. Simuler la fusion avec les statistiques natives
 
 ```yaml
 action: wifitic.merge_native_energy_history
@@ -131,10 +285,26 @@ data:
   confirm_write: false
 ```
 
-Après vérification des données et sauvegarde de Recorder, relancer avec `confirm_write: true` pour écrire les statistiques.
+- `include_injection` : traiter l'énergie exportée vers le réseau.
+- `include_consumption` : traiter les index de soutirage.
+- `confirm_write: false` : **prévisualisation uniquement**.
+- `config_entry_id` : facultatif lorsqu'une seule intégration WiFiTIC est configurée.
+
+### 4. Confirmer après contrôle
+
+Vérifier les périodes, les valeurs et le raccordement avec la première heure MQTT native. Relancer ensuite la même action avec `confirm_write: true` **uniquement si le résultat est cohérent**.
 
 > [!CAUTION]
-> Les écritures de statistiques Recorder ne sont pas atomiques. Après une erreur, contrôler les données déjà importées avant toute nouvelle tentative.
+> Les écritures Recorder ne sont **pas atomiques**. Après une erreur, certaines heures peuvent déjà avoir été importées. Ne pas relancer sans vérifier les statistiques existantes. Éviter tout chevauchement et tout double comptage.
+
+### 5. Vérifier le tableau de bord Énergie
+
+Dans **Paramètres → Tableaux de bord → Énergie**, sélectionner les index de consommation dans **Consommation du réseau** et l'index d'injection dans **Retour au réseau**.
+
+> [!IMPORTANT]
+> La valeur `production.counter` du module WiFiTIC correspond à **l'injection réseau** et **non à la production photovoltaïque totale**. Avec une batterie ou de l'autoconsommation, les deux mesures sont différentes.
+
+L'historique REST peut comporter différents formats selon le micrologiciel du module ; les données sont rapprochées des heures de statistiques Home Assistant avant fusion.
 
 ## 🧩 Carte Lovelace
 
@@ -144,12 +314,16 @@ Elle permet de présenter les informations WiFiTIC dans un tableau de bord Home 
 
 ## ℹ️ Fonctionnement et limites
 
-- La réception des données en temps réel dépend du broker MQTT.
-- Les historiques disponibles dépendent de ce que le module WiFiTIC conserve.
-- Les index et périodes tarifaires varient selon le contrat.
-- L'injection réseau ne représente pas la production photovoltaïque totale.
-- Les périodes déjà présentes dans Recorder ne doivent pas être importées une seconde fois.
-- Une sauvegarde est indispensable avant une migration de statistiques.
+- **MQTT** fournit les mesures en temps réel ; **REST** fournit notamment le contrat, les périodes, les diagnostics et l'historique.
+- L'intégration interroge REST toutes les **300 secondes** et renouvelle une tentative d'abonnement MQTT toutes les **30 secondes** lorsque nécessaire.
+- Le sujet MQTT racine doit correspondre exactement à celui du module, slash initial compris.
+- Les index de consommation dépendent du contrat et des périodes réellement exposées.
+- Les mesures instantanées et les index ne sont pas reconstruits à partir de REST si MQTT est indisponible.
+- Les capteurs de diagnostic et relais sont désactivés par défaut.
+- La puissance soutirée en W est une **estimation**, non une mesure certifiée.
+- Les historiques disponibles dépendent des données conservées par le **[module WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)**.
+- L'injection réseau n'est pas la production photovoltaïque totale.
+- La migration historique nécessite une sauvegarde et un contrôle des statistiques existantes.
 
 ## 🤝 Signaler un problème
 
