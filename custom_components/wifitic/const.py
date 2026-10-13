@@ -1,0 +1,10 @@
+DOMAIN = "wifitic"
+CONF_MQTT_TOPIC = "mqtt_topic"
+DEFAULT_MQTT_TOPIC = "/wifitic"
+DEFAULT_SCAN_INTERVAL = 300
+DEFAULT_DIAGNOSTIC_INTERVAL = 900
+PLATFORMS = ["sensor", "binary_sensor", "button"]
+DATA_API = "api"
+DATA_COORDINATOR = "coordinator"
+DATA_MQTT = "mqtt"
+DATA_PERIODS = "periods"

@@ -1,0 +1,60 @@
+preview_history:
+  name: Simuler l'import historique WiFiTIC
+  description: Analyse l'historique REST et les entités MQTT sans modifier Recorder.
+  fields:
+    config_entry_id:
+      name: Entrée WiFiTIC
+      description: Facultatif si une seule instance WiFiTIC est configurée.
+      required: false
+      selector:
+        config_entry:
+          integration: wifitic
+    start_date:
+      name: Date de début
+      required: true
+      selector:
+        date:
+    end_date:
+      name: Date de fin
+      required: true
+      selector:
+        date:
+
+merge_native_energy_history:
+  name: Fusionner l'historique de l'injection et du soutirage
+  description: Prépare ou importe l'historique REST vers les statistiques natives MQTT, séparément pour chaque index. Les séries déjà migrées ne sont pas réimportées. Écriture non atomique.
+  fields:
+    config_entry_id:
+      name: Entrée WiFiTIC
+      required: false
+      selector:
+        config_entry:
+          integration: wifitic
+    start_date:
+      name: Date de début
+      required: true
+      selector:
+        date:
+    end_date:
+      name: Date de fin
+      required: true
+      selector:
+        date:
+    include_injection:
+      name: Inclure l'injection
+      required: false
+      default: true
+      selector:
+        boolean:
+    include_consumption:
+      name: Inclure le soutirage
+      required: false
+      default: true
+      selector:
+        boolean:
+    confirm_write:
+      name: Confirmer l'écriture native
+      required: false
+      default: false
+      selector:
+        boolean:

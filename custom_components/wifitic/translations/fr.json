@@ -1,0 +1,4 @@
+{
+  "title": "WiFiTIC",
+  "config": {"step":{"user":{"title":"Configurer WiFiTIC","description":"Connexion locale au WiFiTIC et topic MQTT.","data":{"host":"Adresse IP ou nom d’hôte","username":"Utilisateur API (optionnel)","password":"Mot de passe API (optionnel)","mqtt_topic":"Topic MQTT de base"}}},"error":{"cannot_connect":"Impossible de se connecter au WiFiTIC","invalid_auth":"Authentification invalide"},"abort":{"already_configured":"Ce WiFiTIC est déjà configuré"}}
+}
