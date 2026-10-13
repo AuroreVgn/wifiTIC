@@ -367,7 +367,7 @@ Après l'installation de WiFiTIC et la réception des premières trames MQTT, ou
 
 Voici un exemple de configuration du réseau électrique avec les quatre index Zen Flex, l'index d'injection et la puissance soutirée estimée :
 
-![Configuration du tableau de bord Énergie Home Assistant avec les capteurs WiFiTIC](assets/wifitic-dashboard-energie.webp)
+<img src="assets/wifitic-dashboard-energie.webp" alt="Configuration du tableau de bord Énergie Home Assistant avec les capteurs WiFiTIC" width="450">
 
 > [!NOTE]
 > La capture montre également la puissance soutirée estimée (W). Ce capteur de puissance instantanée ne remplace pas les index d'énergie cumulée (Wh) pour le calcul de la consommation.
