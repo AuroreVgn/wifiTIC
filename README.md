@@ -255,17 +255,17 @@ Les index cumulés sont compatibles avec les statistiques longue durée de Home 
 
 ### Contrat et période courante
 
-| Capteur | Rôle |
-| --- | --- |
-| Période tarifaire | Période active (`consumption.runningPeriod`) |
-| Contrat électrique | Nom déterminé à partir des informations REST |
-| État de la téléinformation | État du compteur |
-| Puissance souscrite au contrat | Valeur `psous` en kVA |
-| Seuil de coupure Linky | Valeur `pcoup` en kVA |
-| Profil tarifaire fournisseur aujourd'hui | Code `currentDaySupplier` (champ TIC `NJOURF`) |
-| Profil tarifaire fournisseur demain | Code `nextDaySupplier` (champ TIC `NJOURF+1`) |
+| Capteur | Source | Rôle |
+| --- | --- | --- |
+| Période tarifaire | MQTT `consumption.runningPeriod` | Période active remontée par le compteur |
+| Contrat électrique | REST `/rest/teleinfo` | Nom du contrat déterminé à partir des informations du compteur |
+| État de la téléinformation | MQTT `counter.state` | État du compteur |
+| Puissance souscrite au contrat | MQTT `counter.psous` | Valeur en kVA |
+| Seuil de coupure Linky | MQTT `counter.pcoup` | Valeur en kVA |
+| Profil tarifaire fournisseur aujourd'hui | MQTT `counter.currentDaySupplier` (TIC `NJOURF`) | Code fournisseur du jour |
+| Profil tarifaire fournisseur demain | MQTT `counter.nextDaySupplier` (TIC `NJOURF+1`) | Code fournisseur du lendemain |
 
-Les noms des index proviennent de `/rest/teleinfo/periods`. Pour **EDF Zen Flex** (code contrat `11`), les libellés « pointe » sont présentés comme « sobriété ». Les périodes HC/HP disposent d'icônes adaptées.
+Les libellés des index tarifaires sont récupérés via **REST `/rest/teleinfo/periods`**. Pour **EDF Zen Flex** (code contrat `11`), les libellés « pointe » sont présentés comme « sobriété ». Les périodes HC/HP disposent d'icônes adaptées.
 
 Les profils fournisseur sont exposés sous leur **code brut** : ils ne constituent pas une prévision de prix du kWh.
 
