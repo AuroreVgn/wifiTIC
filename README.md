@@ -35,6 +35,17 @@ Si cette intégration vous est utile, vous pouvez [soutenir son développement s
 
 Les données du compteur sont lues à travers le module **[WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)** ; l'intégration ne nécessite pas de connexion à un compte Enedis ou EDF.
 
+## ⚠️ Avertissement et responsabilité
+
+L'installation physique du **[module WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)** sur un compteur Linky peut présenter des risques électriques. Elle doit être réalisée **dans le respect des instructions du fabricant, des règles de sécurité applicables et des prescriptions du gestionnaire de réseau**, par une personne habilitée ou un professionnel qualifié lorsque cela est nécessaire.
+
+**L'autrice de cette intégration décline toute responsabilité, dans les limites autorisées par la loi, pour les dommages matériels ou corporels, les dysfonctionnements, les pertes de données ou les conséquences d'une installation, d'un raccordement ou d'une utilisation incorrecte du module WiFiTIC.**
+
+Cette intégration est fournie **« en l'état »**, sans garantie de fonctionnement ni de compatibilité avec toutes les installations. Elle n'est ni un guide de câblage ni une validation de la sécurité de l'installation électrique.
+
+> [!CAUTION]
+> Ne jamais intervenir sur des parties sous tension, ouvrir un compartiment scellé ou modifier le compteur Linky. En cas de doute sur le raccordement, faire appel à un professionnel qualifié et consulter la documentation officielle de Cartelectronic.
+
 ## 📦 Installation
 
 ### Option A — HACS (recommandé)
