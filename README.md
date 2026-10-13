@@ -1,4 +1,4 @@
-# ⚡ WiFiTIC — Home Assistant
+# 📊 WiFiTIC — Home Assistant
 
 Intégration personnalisée Home Assistant pour un compteur **WiFiTIC**, combinant les données locales REST et MQTT du compteur Linky.
 
