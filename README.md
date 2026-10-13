@@ -340,12 +340,60 @@ Vérifier les périodes, les valeurs et le raccordement avec la première heure 
 > [!CAUTION]
 > Les écritures Recorder ne sont **pas atomiques**. Après une erreur, certaines heures peuvent déjà avoir été importées. Ne pas relancer sans vérifier les statistiques existantes. Éviter tout chevauchement et tout double comptage.
 
-### 5. Vérifier le tableau de bord Énergie
+### 5. Configurer le tableau de bord Énergie
 
-Dans **Paramètres → Tableaux de bord → Énergie**, sélectionner les index de consommation dans **Consommation du réseau** et l'index d'injection dans **Retour au réseau**.
+Après l'installation de WiFiTIC et la réception des premières trames MQTT, ouvrir **Paramètres → Tableaux de bord → Énergie** (ou ouvrir le tableau de bord **Énergie** puis **Configuration**, selon la version de Home Assistant).
+
+#### A. Consommation du réseau
+
+1. Dans **Réseau électrique**, choisir **Ajouter une consommation du réseau**.
+2. Sélectionner le capteur WiFiTIC **Index énergie soutirée – nom de période** correspondant à la première période tarifaire.
+3. Ajouter une nouvelle consommation pour **chaque autre index tarifaire** à suivre (heures pleines, heures creuses, périodes spécifiques Zen Flex, Tempo, etc.).
+4. Vérifier que chaque index représente bien une **énergie cumulée**, en **Wh**, et non une puissance instantanée en W ou VA.
+
+**Important :** les index tarifaires WiFiTIC sont des compteurs cumulés **distincts**, chacun progressant pendant sa propre période. Ne pas ajouter simultanément un total général de soutirage et tous ses sous-index : cela compterait deux fois la même énergie.
+
+| Section du tableau Énergie | Capteur WiFiTIC à choisir |
+| --- | --- |
+| Consommation du réseau | Un capteur **Index énergie soutirée – [période tarifaire]** par index souhaité |
+| Retour au réseau | **Index énergie injectée au réseau** |
+| Production solaire | **Aucun capteur WiFiTIC d'injection** : utiliser les capteurs de production de l'onduleur / de l'installation solaire |
+
+#### B. Retour au réseau (injection)
+
+1. Dans **Réseau électrique**, choisir **Ajouter un retour au réseau**.
+2. Sélectionner **Index énergie injectée au réseau**.
+3. Vérifier que l'entité est bien issue de `production.counter` et exprime une **énergie cumulée en Wh**.
 
 > [!IMPORTANT]
-> La valeur `production.counter` du module WiFiTIC correspond à **l'injection réseau** et **non à la production photovoltaïque totale**. Avec une batterie ou de l'autoconsommation, les deux mesures sont différentes.
+> Dans les messages du **[WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)**, le champ `production.counter` désigne **l'énergie injectée vers le réseau**, et `production.pprod` la **puissance injectée instantanée**. Ni l'un ni l'autre ne représente la production photovoltaïque totale.
+
+#### C. Production solaire et batterie (si présentes)
+
+Si vous disposez d'une installation photovoltaïque ou d'une batterie, configurer les rubriques **Panneaux solaires** et **Stockage sur batterie** à partir des capteurs d'énergie fournis par les équipements concernés (onduleur, micro-onduleurs, batterie).
+
+Ne pas utiliser le capteur d'injection WiFiTIC comme production solaire : l'énergie autoconsommée et celle stockée dans la batterie ne sont pas nécessairement injectées.
+
+#### D. Tarifs et coûts (facultatif)
+
+Lors de l'ajout d'un index de consommation du réseau, Home Assistant peut proposer une configuration de coût selon la version et les entités disponibles.
+
+- Pour un **tarif fixe**, renseigner le prix correspondant à la période tarifaire, si cette option est proposée.
+- Pour un **tarif variable**, sélectionner une entité de prix en **€/kWh** correctement configurée, si disponible.
+- Avec plusieurs index HP/HC ou Zen Flex, vérifier que le tarif choisi correspond bien à **l'index concerné**.
+- L'intégration WiFiTIC remonte les **index du compteur** ; elle ne garantit pas à elle seule la connaissance du **prix contractuel** applicable.
+
+#### E. Vérifier les données et éviter les doublons
+
+- Attendre la création des statistiques longue durée : les graphiques peuvent ne pas se remplir immédiatement.
+- Dans **Outils de développement → États**, vérifier que les index évoluent et ne sont pas `unknown` ou `unavailable`.
+- Dans **Outils de développement → Statistiques**, vérifier l'absence d'erreurs sur les entités utilisées.
+- Ne pas sélectionner les capteurs **Énergie soutirée aujourd'hui** ou **Énergie injectée aujourd'hui** à la place des index cumulés pour ce paramétrage.
+- Si d'autres intégrations (Enedis, Linky, onduleur) fournissent déjà la **même énergie du réseau**, éviter de les ajouter en parallèle à WiFiTIC.
+- Si vous avez fusionné l'historique REST avec `wifitic.merge_native_energy_history`, conserver **les mêmes index MQTT natifs** dans le tableau de bord Énergie : la fusion complète leur historique, elle ne crée pas une nouvelle source à sélectionner.
+
+> [!NOTE]
+> Le tableau de bord Énergie travaille sur les **statistiques d'énergie** (Wh ou kWh). Les capteurs de **puissance** en W ou VA servent aux vues temps réel et ne doivent pas être sélectionnés comme index énergétiques.
 
 L'historique REST peut comporter différents formats selon le micrologiciel du module ; les données sont rapprochées des heures de statistiques Home Assistant avant fusion.
 
