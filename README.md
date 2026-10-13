@@ -295,6 +295,13 @@ Les relais lisent `consumption.relay.r1` à `r8`. Leur état est informatif : le
 
 Les API REST sont locales au module **[WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)**.
 
+### Documentation de l'API REST (Swagger)
+
+Cartelectronic met à disposition une **documentation Swagger de l'API WiFiTIC**, consultable en ligne : **[Swagger WiFiTIC — version 1.4.1](https://cartelectronic-cloud.fr:8005/wifiTIC/1.4.1)**.
+
+Cette documentation permet de consulter les points d'accès et les modèles de données de l'API. La version indiquée dans le lien est **1.4.1** ; les fonctionnalités effectivement disponibles peuvent varier selon le firmware installé sur le module.
+
+
 ## 🕰️ Importation de l'historique énergétique
 
 L'intégration peut compléter les **statistiques natives MQTT** de Home Assistant avec les données historiques REST antérieures à la mise en service de l'intégration. Elle traite l'**injection** et le **soutirage**, y compris les index de consommation par période.
