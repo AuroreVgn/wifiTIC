@@ -10,6 +10,8 @@ from .mqtt import WiFiTICMQTT
 from .history import preview_history, merge_native_consumption_history
 from .const import DOMAIN, PLATFORMS, CONF_MQTT_TOPIC, DEFAULT_MQTT_TOPIC, DATA_API, DATA_COORDINATOR, DATA_MQTT
 
+SERVICE_PREVIEW = "preview_history"
+
 async def async_setup(hass, config):
     async def preview(call):
         """Preview historical REST data without requiring hass.data to contain the entry."""
