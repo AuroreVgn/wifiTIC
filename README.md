@@ -95,44 +95,87 @@ Compteur Linky ── téléinformation TIC ──► WiFiTIC
                               Home Assistant
 ```
 
-### 1. Configurer MQTT dans Home Assistant
+### 1. Configurer le broker MQTT dans Home Assistant
 
-1. Disposer d'un **broker MQTT** joignable par Home Assistant et par le module **[WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)**. Sur Home Assistant OS, le module complémentaire **Mosquitto broker** convient.
-2. Installer et démarrer le broker ; créer un utilisateur autorisé à s'y connecter si nécessaire. Ne pas utiliser un compte sans mot de passe exposé sur Internet.
-3. Dans **Paramètres → Appareils et services**, ajouter l'intégration officielle **MQTT** (ou vérifier qu'elle est déjà configurée).
-4. Indiquer l'adresse du broker, son port (généralement **1883** pour MQTT sans TLS) et les identifiants du compte MQTT, si l'assistant les demande.
-5. Vérifier que MQTT est connecté. **Aucun capteur MQTT manuel ni MQTT Discovery n'est nécessaire pour cette intégration** : WiFiTIC s'abonne directement aux sujets.
+Home Assistant et le **[module WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)** doivent se connecter au **même broker MQTT**. Le broker reçoit les messages du module ; l'intégration MQTT officielle de Home Assistant permet ensuite à WiFiTIC de s'abonner à ces messages.
+
+#### A. Installer Mosquitto broker (Home Assistant OS)
+
+1. Dans Home Assistant, ouvrir **Paramètres → Modules complémentaires** (ou **Paramètres → Applications**, selon la version).
+2. Ouvrir la boutique des modules complémentaires, rechercher **Mosquitto broker** et l'installer.
+3. Dans la page du module, activer **Démarrer au démarrage** et, si souhaité, **Watchdog**.
+4. Démarrer **Mosquitto broker**.
+5. Ouvrir l'onglet **Journal** et vérifier l'absence d'erreur au démarrage.
 
 > [!NOTE]
-> Le broker est un service distinct de l'intégration MQTT de Home Assistant. Le module et Home Assistant doivent se connecter **au même broker**.
+> Sur Home Assistant Container ou Core, le magasin de modules complémentaires n'est pas disponible. Il faut utiliser un broker Mosquitto externe, par exemple sur un autre hôte ou conteneur Docker, puis configurer l'intégration MQTT avec son adresse.
+
+#### B. Créer un utilisateur MQTT
+
+1. Aller dans **Paramètres → Personnes → Utilisateurs** (ou l'écran de gestion des utilisateurs de votre version).
+2. Créer un utilisateur dédié, par exemple `mqtt_wifitic`, avec un **mot de passe fort**.
+3. Utiliser ces identifiants dans la configuration MQTT du **module WiFiTIC**.
+4. Vérifier que Mosquitto accepte bien les connexions de cet utilisateur.
+
+Le broker Mosquitto fourni par Home Assistant peut utiliser les comptes Home Assistant pour l'authentification. Il est aussi possible de définir des comptes supplémentaires dans la configuration du module complémentaire, selon son mode d'authentification. **Ne pas publier le mot de passe dans une issue GitHub ou dans des captures d'écran.**
+
+#### C. Configurer l'intégration MQTT officielle
+
+1. Aller dans **Paramètres → Appareils et services → Ajouter une intégration**.
+2. Rechercher **MQTT** et sélectionner l'intégration officielle.
+3. Avec le module complémentaire Mosquitto, Home Assistant peut détecter automatiquement le broker ; accepter la découverte si elle correspond au bon broker.
+4. Sinon, renseigner l'**hôte**, le **port** (généralement `1883` sans TLS), l'**identifiant** et le **mot de passe** du broker.
+5. Vérifier que l'intégration MQTT apparaît **configurée et connectée**.
+
+L'adresse du broker à saisir dans **WiFiTIC** est une adresse **joignable depuis le module physique** sur le réseau local. Ce n'est pas forcément l'adresse utilisée en interne par Home Assistant.
+
+#### D. Vérifier l'accès réseau
+
+- Le port TCP **1883** doit être accessible du module WiFiTIC vers le broker pour une connexion MQTT non chiffrée.
+- Si un pare-feu ou un VLAN sépare les appareils, autoriser cette connexion.
+- Ne **pas** exposer le port 1883 sur Internet.
+- Le protocole et le port doivent correspondre : `mqtt://` pour une connexion classique, `mqtts://` uniquement si TLS est effectivement configuré.
+
+**Aucun capteur MQTT YAML ni MQTT Discovery n'est nécessaire** : l'intégration WiFiTIC crée elle-même les entités.
 
 ### 2. Configurer MQTT sur le module WiFiTIC
 
-Ouvrir l'interface Web locale du **[module WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)** et accéder à ses paramètres **MQTT**. Les libellés exacts peuvent varier selon le micrologiciel.
+Ouvrir l'interface Web du **[WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)**, puis **CONFIGURATION → MQTT**. Les champs ci-dessous correspondent à l'interface du module.
 
-| Paramètre du module | Valeur / indication |
+| Champ affiché dans WiFiTIC | Valeur / rôle |
 | --- | --- |
-| MQTT activé | **Oui** |
-| Serveur / Broker | Adresse IP ou nom DNS du **broker MQTT**, pas nécessairement celle du compteur |
-| Port | `1883` par défaut sans TLS, ou le port réellement configuré |
-| Utilisateur | Compte MQTT autorisé sur le broker |
-| Mot de passe | Mot de passe correspondant |
-| Sujet / Topic racine | `/wifitic` dans les exemples ci-dessous |
-| Publication des données TIC | Activée |
+| **Activation** | Activer MQTT |
+| **Serveur MQTT** | URL du broker, sous la forme `mqtt://ADRESSE_IP_DU_BROKER` (et non une simple IP) |
+| **Authentification** | Activer si le broker exige un utilisateur et un mot de passe |
+| **Identifiant** | Compte MQTT dédié, par exemple `mqtt_wifitic` |
+| **Mot de passe** | Mot de passe du compte MQTT |
+| **QoS** | `QoS 0` dans la configuration illustrée ; laisser cette valeur pour commencer |
+| **Topic Racine MQTT** | `wifitic` dans le champ |
+| **Ajout du sous-élément racine '/'** | **Coché** dans la configuration illustrée |
+| **ENREGISTRER** | Enregistrer les paramètres sur le module |
+| **DISCOVERY** | Fonction distincte de l'intégration personnalisée WiFiTIC ; ne pas l'activer pour créer des entités en double |
 
-Exemple de paramètres, **à adapter à votre réseau** :
+Exemple **anonymisé**, reproduisant les réglages de l'interface :
 
 ```text
-Serveur MQTT : 192.168.1.10
-Port         : 1883
-Utilisateur  : mqtt_wifitic
-Mot de passe : ********
-Topic racine : /wifitic
+Activation                     : Activée
+Serveur MQTT                   : mqtt://192.168.1.100
+Authentification               : Activée
+Identifiant                    : mqtt_wifitic
+Mot de passe                   : ********
+QoS                            : QoS 0
+Topic Racine MQTT              : wifitic
+Ajout du sous-élément racine / : Coché
 ```
 
-**Attention au slash initial :** `wifitic` et `/wifitic` sont deux sujets MQTT différents. Le sujet choisi sur le module doit être **identique** au sujet racine configuré dans l'intégration Home Assistant.
+L'adresse `192.168.1.100` est **fictive** : la remplacer par l'adresse locale réelle du broker Mosquitto. Les identifiants sont des exemples et ne correspondent pas à ceux de la capture.
 
-Si le module propose son propre **MQTT Discovery Home Assistant**, il est préférable de le désactiver pour éviter les entités en double : l'intégration WiFiTIC crée elle-même ses entités. Elle ne supprime pas les entités Discovery déjà existantes.
+> [!IMPORTANT]
+> **Ne pas saisir `/wifitic` dans le champ « Topic Racine MQTT » si l'option « Ajout du sous-élément racine '/' » est cochée.** Avec le champ `wifitic` et cette case cochée, le module publie sous la racine `/wifitic`, attendue par défaut par l'intégration Home Assistant. Si vous décochez la case, vérifiez les sujets réellement publiés et adaptez le sujet racine dans l'intégration.
+
+Après avoir cliqué sur **ENREGISTRER**, vérifier l'indicateur d'état de connexion MQTT en haut à droite du panneau. Un indicateur positif est utile, mais **la réception des messages dans Home Assistant reste la vérification déterminante**.
+
+Si le module propose **DISCOVERY**, ce mécanisme est destiné à la découverte automatique MQTT. Il n'est **pas nécessaire** pour l'intégration personnalisée `wifiTIC`, qui gère ses propres entités. Éviter de déclencher une découverte supplémentaire si vous ne souhaitez pas de doublons.
 
 ### 3. Vérifier les publications MQTT
 
