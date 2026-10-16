@@ -21,16 +21,18 @@ Si cette intégration vous est utile, vous pouvez [soutenir son développement s
 
 ## 📑 Sommaire
 
-- [✨ Fonctionnalités](#-fonctionnalités)
-- [⚠️ Avertissement et responsabilité](#-avertissement-et-responsabilité)
-- [📦 Installation](#-installation)
-- [⚙️ Configuration](#-configuration)
-- [📊 Entités créées](#-entités-créées)
-- [🕰️ Importation de l'historique énergétique](#-importation-de-lhistorique-énergétique)
-- [🧩 Carte Lovelace](#-carte-lovelace)
-- [ℹ️ Fonctionnement et limites](#ℹ-fonctionnement-et-limites)
-- [🤝 Signaler un problème](#-signaler-un-problème)
-- [📄 Licence](#-licence)
+- [✨ Fonctionnalités](#toc-section-1)
+- [⚠️ Avertissement et responsabilité](#toc-section-2)
+- [📦 Installation](#toc-section-3)
+- [⚙️ Configuration](#toc-section-4)
+- [📊 Entités créées](#toc-section-5)
+- [🕰️ Importation de l'historique énergétique](#toc-section-6)
+- [🧩 Carte Lovelace](#toc-section-7)
+- [ℹ️ Fonctionnement et limites](#toc-section-8)
+- [🤝 Signaler un problème](#toc-section-9)
+- [📄 Licence](#toc-section-10)
+
+<a name="toc-section-1"></a>
 
 ## ✨ Fonctionnalités
 
@@ -48,6 +50,8 @@ Si cette intégration vous est utile, vous pouvez [soutenir son développement s
 
 Les données du compteur sont lues à travers le module **[WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)** ; l'intégration ne nécessite pas de connexion à un compte Enedis ou EDF.
 
+<a name="toc-section-2"></a>
+
 ## ⚠️ Avertissement et responsabilité
 
 L'installation physique du **[module WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)** sur un compteur Linky peut présenter des risques électriques. Elle doit être réalisée **dans le respect des instructions du fabricant, des règles de sécurité applicables et des prescriptions du gestionnaire de réseau**, par une personne habilitée ou un professionnel qualifié lorsque cela est nécessaire.
@@ -58,6 +62,8 @@ Cette intégration est fournie **« en l'état »**, sans garantie de fonctionne
 
 > [!CAUTION]
 > Ne jamais intervenir sur des parties sous tension, ouvrir un compartiment scellé ou modifier le compteur Linky. En cas de doute sur le raccordement, faire appel à un professionnel qualifié et consulter la documentation officielle de Cartelectronic.
+
+<a name="toc-section-3"></a>
 
 ## 📦 Installation
 
@@ -101,6 +107,8 @@ Cette intégration étant un dépôt personnalisé, il faut l'ajouter une premi�
 3. Redémarrer Home Assistant.
 
 Après l'installation, aller dans **Paramètres → Appareils et services → Ajouter une intégration**, puis rechercher **WiFiTIC**.
+
+<a name="toc-section-4"></a>
 
 ## ⚙️ Configuration
 
@@ -258,6 +266,8 @@ Les informations REST sont actualisées automatiquement **toutes les 5 minutes**
 
 Pour l'importation des données historiques, consulter la rubrique **🕰️ Importation de l'historique énergétique** plus bas.
 
+<a name="toc-section-5"></a>
+
 ## 📊 Entités créées
 
 ### Consommation et injection
@@ -326,6 +336,8 @@ Cartelectronic met à disposition une **documentation Swagger de l'API WiFiTIC**
 
 Cette documentation permet de consulter les points d'accès et les modèles de données de l'API. La version indiquée dans le lien est **1.4.1** ; les fonctionnalités effectivement disponibles peuvent varier selon le firmware installé sur le module.
 
+
+<a name="toc-section-6"></a>
 
 ## 🕰️ Importation de l'historique énergétique
 
@@ -436,11 +448,15 @@ Lors de l'ajout d'un index de consommation du réseau, Home Assistant peut propo
 
 L'historique REST peut comporter différents formats selon le micrologiciel du module ; les données sont rapprochées des heures de statistiques Home Assistant avant fusion.
 
+<a name="toc-section-7"></a>
+
 ## 🧩 Carte Lovelace
 
 La carte est distribuée dans un dépôt distinct : **[WiFiTIC Card](https://github.com/AuroreVgn/wifiTIC_card)**.
 
 Elle permet de présenter les informations WiFiTIC dans un tableau de bord Home Assistant. Consulter son dépôt pour connaître son état de publication.
+
+<a name="toc-section-8"></a>
 
 ## ℹ️ Fonctionnement et limites
 
@@ -455,9 +471,13 @@ Elle permet de présenter les informations WiFiTIC dans un tableau de bord Home 
 - L'injection réseau n'est pas la production photovoltaïque totale.
 - La migration historique nécessite une sauvegarde et un contrôle des statistiques existantes.
 
+<a name="toc-section-9"></a>
+
 ## 🤝 Signaler un problème
 
 Ouvrir une [issue GitHub](https://github.com/AuroreVgn/wifiTIC/issues) en indiquant la version de Home Assistant, la version de l'intégration, le comportement attendu et les journaux utiles **sans données personnelles**.
+
+<a name="toc-section-10"></a>
 
 ## 📄 Licence
 
