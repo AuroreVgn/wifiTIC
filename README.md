@@ -19,6 +19,19 @@ Intégration personnalisée **Home Assistant** pour les compteurs **Linky** équ
 
 Si cette intégration vous est utile, vous pouvez [soutenir son développement sur Ko-fi](https://ko-fi.com/aurorevgn).
 
+## 📑 Sommaire
+
+- [✨ Fonctionnalités](#-fonctionnalités)
+- [⚠️ Avertissement et responsabilité](#-avertissement-et-responsabilité)
+- [📦 Installation](#-installation)
+- [⚙️ Configuration](#-configuration)
+- [📊 Entités créées](#-entités-créées)
+- [🕰️ Importation de l'historique énergétique](#-importation-de-lhistorique-énergétique)
+- [🧩 Carte Lovelace](#-carte-lovelace)
+- [ℹ️ Fonctionnement et limites](#ℹ-fonctionnement-et-limites)
+- [🤝 Signaler un problème](#-signaler-un-problème)
+- [📄 Licence](#-licence)
+
 ## ✨ Fonctionnalités
 
 - Configuration depuis l'interface Home Assistant, sans capteurs YAML à créer manuellement.
