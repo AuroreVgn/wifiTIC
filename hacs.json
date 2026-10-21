@@ -1,4 +1,5 @@
 {
   "name": "WiFiTIC",
-  "render_readme": true
+  "render_readme": true,
+  "country": "FR"
 }
