@@ -67,51 +67,33 @@ Cette intégration est fournie **« en l'état »**, sans garantie de fonctionne
 
 ## 📦 Installation
 
-> [!NOTE]
-> **Marketplace / HACS — Home Assistant 2026.11+ :** ouvrez **Paramètres → Marketplace** (intégré à Home Assistant, sans installation séparée de HACS). Recherchez ce projet ou ajoutez `https://github.com/AuroreVgn/wifiTIC` comme **dépôt personnalisé** s'il n'est pas encore référencé. Sur Home Assistant **2026.10 et versions antérieures**, utilisez HACS comme indiqué ci-dessous. Les liens `hacs_repository` existants restent compatibles. Après installation, configurez l'intégration dans Paramètres → Appareils et services. Ce projet reste communautaire et non officiel.
->
+### Option A — Marketplace (anciennement HACS ; Home Assistant >= 2026.11)
 
+1. Ouvrez **Paramètres → Marketplace**.
+2. Recherchez **WiFiTIC** dans le catalogue.
+3. Ouvrez la fiche de l'intégration et choisissez **Installer**.
+4. Suivez les indications affichées par Home Assistant. Redémarrez uniquement si cela vous est demandé.
+5. Ajoutez ensuite l'intégration depuis **Paramètres → Appareils et services → Ajouter une intégration → WiFiTIC**.
 
-### Option A — HACS (recommandé)
+### Option B — HACS classique
 
-#### Automatiquement
+Sur Home Assistant 2026.10 et versions antérieures, retrouvez **WiFiTIC** directement dans le catalogue HACS, sans ajouter de dépôt personnalisé.
 
-[![Ouvrir Home Assistant et ajouter ce dépôt dans HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=AuroreVgn&repository=wifiTIC&category=integration)
+[![Ouvrir le dépôt dans HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?category=integration&repository=wifiTIC&owner=AuroreVgn)
 
-#### Manuellement
+Ou depuis HACS :
 
-Cette intégration étant un dépôt personnalisé, il faut l'ajouter une première fois dans HACS :
+1. Ouvrez **HACS → Intégrations**.
+2. Recherchez **WiFiTIC**.
+3. Sélectionnez l'intégration et choisissez **Télécharger**.
+4. Redémarrez Home Assistant si nécessaire, puis ajoutez l'intégration depuis **Paramètres → Appareils et services**.
 
-1. Ouvrir **HACS** → **Intégrations**.
-2. Ouvrir le menu **⋮** → **Dépôts personnalisés**.
-3. Ajouter :
+### Option C — Installation manuelle
 
-   ```text
-   https://github.com/AuroreVgn/wifiTIC
-   ```
-
-4. Choisir la catégorie **Intégration**.
-5. Rechercher **WiFiTIC** dans HACS puis installer l'intégration.
-6. Redémarrer Home Assistant.
-
-### Option B — Installation manuelle
-
-1. Télécharger la dernière version du dépôt.
-2. Copier le dossier :
-
-   ```text
-   custom_components/wifitic
-   ```
-
-   dans :
-
-   ```text
-   /config/custom_components/wifitic
-   ```
-
-3. Redémarrer Home Assistant.
-
-Après l'installation, aller dans **Paramètres → Appareils et services → Ajouter une intégration**, puis rechercher **WiFiTIC**.
+1. Téléchargez l'archive de la [dernière release](https://github.com/AuroreVgn/wifiTIC/releases/latest).
+2. Dans le répertoire contenant `configuration.yaml`, créez si nécessaire `custom_components`.
+3. Placez le contenu du composant dans `/config/custom_components/wifitic`.
+4. Redémarrez Home Assistant, puis ajoutez l'intégration depuis **Paramètres → Appareils et services**.
 
 <a name="toc-section-4"></a>
 
