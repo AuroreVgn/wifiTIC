@@ -1,5 +1,9 @@
 from __future__ import annotations
 from datetime import date
+import asyncio
+
+from homeassistant.exceptions import HomeAssistantError
+from .card import async_setup_card
 import voluptuous as vol
 from homeassistant.const import CONF_HOST, CONF_USERNAME, CONF_PASSWORD
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -11,6 +15,8 @@ from .history import preview_history, merge_native_consumption_history
 from .const import DOMAIN, PLATFORMS, CONF_MQTT_TOPIC, DEFAULT_MQTT_TOPIC, DATA_API, DATA_COORDINATOR, DATA_MQTT
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
+
+_HISTORY_LOCKS_KEY = "wifitic_history_import_locks"
 
 SERVICE_PREVIEW = "preview_history"
 
@@ -73,14 +79,21 @@ async def async_setup(hass, config):
         api = WiFiTICApi(async_get_clientsession(hass), entry.data[CONF_HOST],
                          entry.data.get(CONF_USERNAME) or None,
                          entry.data.get(CONF_PASSWORD) or None)
-        return await merge_native_consumption_history(
-            hass, api, entry.entry_id,
+        # Serialize writes and preflight checks for each meter. A second
+        # concurrent request must fail instead of reading stale Recorder sums.
+        locks = hass.data.setdefault(_HISTORY_LOCKS_KEY, {})
+        lock = locks.setdefault(entry.entry_id, asyncio.Lock())
+        if lock.locked():
+            raise HomeAssistantError("WiFiTIC history import already in progress for this meter")
+        async with lock:
+            return await merge_native_consumption_history(
+                hass, api, entry.entry_id,
             date.fromisoformat(call.data["start_date"]),
             date.fromisoformat(call.data["end_date"]),
             call.data.get("confirm_write", False),
             call.data.get("include_injection", True),
-            call.data.get("include_consumption", True),
-        )
+                call.data.get("include_consumption", True),
+            )
 
     if not hass.services.has_service(DOMAIN, "merge_native_energy_history"):
         hass.services.async_register(
@@ -96,6 +109,7 @@ async def async_setup(hass, config):
     return True
 
 async def async_setup_entry(hass, entry):
+    await async_setup_card(hass)
     api=WiFiTICApi(async_get_clientsession(hass),entry.data[CONF_HOST],entry.data.get(CONF_USERNAME) or None,entry.data.get(CONF_PASSWORD) or None)
     coordinator=WiFiTICCoordinator(hass,api); await coordinator.async_config_entry_first_refresh()
     mqtt=WiFiTICMQTT(hass,entry.data.get(CONF_MQTT_TOPIC,DEFAULT_MQTT_TOPIC))
