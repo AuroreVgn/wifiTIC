@@ -46,7 +46,7 @@ Si cette intégration vous est utile, vous pouvez [soutenir son développement s
 - **Historique REST** : prévisualisation, puis fusion contrôlée des historiques de soutirage et d'injection avec les statistiques natives du tableau de bord Énergie.
 - **Bouton d'actualisation REST**, diagnostics des trames valides et des erreurs CRC.
 - Interface traduite en **français et anglais**.
-- Carte Lovelace complémentaire dans le [dépôt WiFiTIC Card](https://github.com/AuroreVgn/wifiTIC_card).
+- **Carte Lovelace WiFiTIC Energy Card incluse dans l'intégration** : installation et mises à jour conjointes, sans plugin HACS supplémentaire.
 
 Les données du compteur sont lues à travers le module **[WiFiTIC de Cartelectronic](https://cartelectronic.fr/accueil/136-wifitic.html)** ; l'intégration ne nécessite pas de connexion à un compte Enedis ou EDF.
 
@@ -455,11 +455,57 @@ L'historique REST peut comporter différents formats selon le micrologiciel du m
 
 <a name="toc-section-7"></a>
 
-## 🧩 Carte Lovelace
+## 🧩 Carte Lovelace intégrée
 
-La carte est distribuée dans un dépôt distinct : **[WiFiTIC Card](https://github.com/AuroreVgn/wifiTIC_card)**.
+La **WiFiTIC Energy Card** est désormais fournie directement avec l'intégration WiFiTIC : **il n'est plus nécessaire d'installer le dépôt `wifiTIC_card` séparément**.
 
-Elle permet de présenter les informations WiFiTIC dans un tableau de bord Home Assistant. Consulter son dépôt pour connaître son état de publication.
+### Installation et ajout au tableau de bord
+
+1. Installer ou mettre à jour l'intégration **WiFiTIC** depuis Marketplace / HACS, puis redémarrer Home Assistant.
+2. Dans un tableau de bord, ajouter une **carte manuelle** avec :
+
+   ```yaml
+   type: custom:wifitic-energy-card
+   ```
+
+3. L'intégration expose le fichier JavaScript à l'adresse `/wifitic/wifitic-energy-card.js` et tente d'enregistrer automatiquement la ressource Lovelace.
+4. Si la carte ne s'affiche pas, vérifier **Paramètres → Tableaux de bord → Ressources** (emplacement variable selon la version) et ajouter cette adresse comme **Module JavaScript**, si elle n'est pas déjà présente. Recharger ensuite le navigateur.
+
+### Migration depuis l'ancien dépôt WiFiTIC Card
+
+Si vous utilisiez auparavant le plugin autonome :
+
+1. Mettre à jour l'intégration WiFiTIC et vérifier que la ressource `/wifitic/wifitic-energy-card.js` est disponible.
+2. Dans **Ressources**, supprimer l'ancienne ressource du plugin, généralement `/hacsfiles/wifiTIC_card/wifitic-energy-card.js` ou `/local/wifitic-energy-card.js`. **Conserver** la nouvelle ressource `/wifitic/wifitic-energy-card.js`.
+3. Désinstaller l'ancien dépôt **WiFiTIC Card** depuis HACS / Marketplace lorsqu'il est encore installé.
+4. Recharger complètement le navigateur pour éviter qu'une ancienne version JavaScript reste en cache.
+
+**Ne chargez pas simultanément l'ancienne et la nouvelle ressource** : les deux scripts enregistrent le même type de carte. Vos configurations existantes `type: custom:wifitic-energy-card` restent inchangées.
+
+### Fonctionnalités et configuration
+
+- Modes **Détaillé** et **Compact**.
+- Affichage des puissances en **tuiles** ou en **jauges circulaires**.
+- Maximum configurable **indépendamment** pour les jauges de soutirage et d'injection.
+- Graphique local des puissances (depuis l'ouverture de la carte), index tarifaires, mesures et diagnostics.
+- Éditeur graphique pour les entités, le mode et les options d'affichage.
+- Thèmes clair/sombre et actualisation ciblée pour limiter les sauts de défilement sur Safari iOS.
+
+Exemple de configuration :
+
+```yaml
+type: custom:wifitic-energy-card
+title: WiFiTIC — Électricité
+mode: detailed
+show_graph: true
+power_display: gauges
+power_gauge_max_import: 6000
+power_gauge_max_export: 6000
+```
+
+Les configurations utilisant l'ancien maximum commun `power_gauge_max` restent compatibles. Les maxima séparés prennent le dessus lorsqu'ils sont renseignés.
+
+Pour les captures et la documentation historique de la carte, consulter le [dépôt WiFiTIC Card](https://github.com/AuroreVgn/wifiTIC_card), désormais remplacé pour l'installation par ce dépôt principal.
 
 <a name="toc-section-8"></a>
 
