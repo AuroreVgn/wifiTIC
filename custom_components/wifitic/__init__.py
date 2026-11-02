@@ -87,11 +87,13 @@ async def async_setup(hass, config):
             raise HomeAssistantError("WiFiTIC history import already in progress for this meter")
         async with lock:
             return await merge_native_consumption_history(
-                hass, api, entry.entry_id,
-            date.fromisoformat(call.data["start_date"]),
-            date.fromisoformat(call.data["end_date"]),
-            call.data.get("confirm_write", False),
-            call.data.get("include_injection", True),
+                hass,
+                api,
+                entry.entry_id,
+                date.fromisoformat(call.data["start_date"]),
+                date.fromisoformat(call.data["end_date"]),
+                call.data.get("confirm_write", False),
+                call.data.get("include_injection", True),
                 call.data.get("include_consumption", True),
             )
 
