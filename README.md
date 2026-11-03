@@ -445,9 +445,7 @@ La **WiFiTIC Energy Card** est désormais fournie directement avec l'intégratio
 
 | Mode sombre | Mode clair |
 | :---: | :---: |
-| <img src="https://raw.githubusercontent.com/AuroreVgn/wifiTIC_card/main/assets/dark.png" alt="WiFiTIC Energy Card — mode sombre" width="340"> | <img src="https://raw.githubusercontent.com/AuroreVgn/wifiTIC_card/main/assets/light.png" alt="WiFiTIC Energy Card — mode clair" width="340"> |
-
-Images issues du [dépôt historique WiFiTIC Card](https://github.com/AuroreVgn/wifiTIC_card/tree/main/assets). **La carte s'installe désormais depuis l'intégration principale.**
+| <img src="https://raw.githubusercontent.com/AuroreVgn/wifiTIC_card/main/assets/dark.png" alt="WiFiTIC Energy Card — mode sombre" width="340"> | <img src="https://raw.githubusercontent.com/AuroreVgn/wifiTIC_card/main/assets/light.png" alt="WiFiTIC Energy Card — mode clair" width="340"> 
 
 ### Installation et ajout au tableau de bord
 
