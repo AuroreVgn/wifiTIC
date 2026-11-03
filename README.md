@@ -441,6 +441,14 @@ L'historique REST peut comporter différents formats selon le micrologiciel du m
 
 La **WiFiTIC Energy Card** est désormais fournie directement avec l'intégration WiFiTIC : **il n'est plus nécessaire d'installer le dépôt `wifiTIC_card` séparément**.
 
+### Aperçus de la carte Lovelace
+
+| Mode sombre | Mode clair |
+| :---: | :---: |
+| <img src="https://raw.githubusercontent.com/AuroreVgn/wifiTIC_card/main/assets/dark.png" alt="WiFiTIC Energy Card — mode sombre" width="340"> | <img src="https://raw.githubusercontent.com/AuroreVgn/wifiTIC_card/main/assets/light.png" alt="WiFiTIC Energy Card — mode clair" width="340"> |
+
+Images issues du [dépôt historique WiFiTIC Card](https://github.com/AuroreVgn/wifiTIC_card/tree/main/assets). **La carte s'installe désormais depuis l'intégration principale.**
+
 ### Installation et ajout au tableau de bord
 
 1. Installer ou mettre à jour l'intégration **WiFiTIC** depuis Marketplace / HACS, puis redémarrer Home Assistant.
@@ -487,7 +495,7 @@ power_gauge_max_export: 6000
 
 Les configurations utilisant l'ancien maximum commun `power_gauge_max` restent compatibles. Les maxima séparés prennent le dessus lorsqu'ils sont renseignés.
 
-Pour les captures et la documentation historique de la carte, consulter le [dépôt WiFiTIC Card](https://github.com/AuroreVgn/wifiTIC_card), désormais remplacé pour l'installation par ce dépôt principal.
+Les captures sont affichées ci-dessus. Pour les anciennes versions uniquement, consulter le [dépôt historique WiFiTIC Card](https://github.com/AuroreVgn/wifiTIC_card).
 
 <a name="toc-section-8"></a>
 
