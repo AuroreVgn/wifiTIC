@@ -35,7 +35,7 @@ Si cette intégration vous est utile et que vous souhaitez soutenir son dévelop
 - [⚙️ Configuration](#toc-section-4)
 - [📊 Entités créées](#toc-section-5)
 - [🕰️ Importation de l'historique énergétique](#toc-section-6)
-- [🧩 Carte Lovelace](#toc-section-7)
+- [🧩 Carte Lovelace intégrée](#toc-section-7)
 - [ℹ️ Fonctionnement et limites](#toc-section-8)
 - [🤝 Signaler un problème](#toc-section-9)
 - [📄 Licence](#toc-section-10)
